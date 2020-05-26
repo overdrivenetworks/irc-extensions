@@ -31,7 +31,7 @@ In order to prevent abuse, servers should take steps to verify that the caller i
 
 Servers MUST also sanitize or reject nicks that contain reserved IRC characters, including `!+%@&#$:'"?*,.` and whitespace. This is to avoid sending invalid messages to clients.
 
-Servers may choose to filter spoofed nicks further, or pass them through as is. Spoofed nicks do not necessarily need to be valid IRC nicks; implementations may choose to accept UTF-8 text, for example. One beneficial side effect of having spoofed nicks always be invalid (e.g. by requiring a separator like `/`) is preventing IRC users from changing their nick to those that the bot is using.
+Servers may choose to filter spoofed nicks further, or pass them through as is. Spoofed nicks do not necessarily need to be valid IRC nicks; implementations may choose to accept UTF-8 text, for example. One potentially beneficial effect of having spoofed nicks always be invalid is to prevent IRC users from changing their nick to those that the bot is using. This can be done by e.g. by requiring a separator like `/` inside the spoofed nick.
 
 ## Example implementations
 
