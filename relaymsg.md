@@ -1,14 +1,40 @@
-# `overdrivenetworks.com/relaymsg` extension
+---
+title: RELAYMSG extension
+layout: spec
+work-in-progress: true
+copyrights:
+  - name: "James Lu"
+    email: "james@overdrivenetworks.com"
+    period: "2020"
+  - name: "Daniel Oaks"
+    email: "daniel@danieloaks.net"
+    period: "2020"
+---
 
-The `relaymsg` extension allows bots to send channel messages using spoofed nicks. The goal is to allow creating a transparent experience for relay bots, without the overhead of connecting extra clients or maintaining state as a virtual server.
+## Notes for implementing work-in-progress version
 
-## The `overdrivenetworks.com/relaymsg` capability
+This is a work-in-progress specification.
 
-The `overdrivenetworks.com/relaymsg` capability lets clients use the `RELAYMSG` command and receive `relaymsg` tags.
+Software implementing this work-in-progress specification MUST NOT use the
+unprefixed `relaymsg` capability name. Instead, implementations SHOULD
+use the `draft/relaymsg` capability name to be interoperable with other
+software implementing a compatible work-in-progress version.
 
-If this capability has a value, the given characters are 'nickname separators'. These characters aren't allowed in normal nicknames, and if given one MUST be present in spoofed nicknames. For example, with `overdrivenetworks.com/relaymsg=/` the spoofed nickname MUST include the character `"/"`.
+The final version of the specification will use an unprefixed capability name.
 
-## `RELAYMSG` command
+## Introduction
+
+The `relaymsg` extension allows bots to send channel messages using spoofed nicks. The goal is to let relay bots operate transparently (i.e. no sender prefixes for messages sent from a single bot), without the overhead of tracking all remote users. Currently, relayers that wish to create a transparent experience must either connect extra clients to IRC or create users from a services server; however, these methods do not scale well for larger communities.
+
+## Architecture
+
+### The `draft/relaymsg` capability
+
+The `draft/relaymsg` capability lets clients use the `RELAYMSG` command and receive `relaymsg` tags.
+
+If this capability has a value, the given characters are 'nickname separators'. These characters aren't allowed in normal nicknames, and if given one MUST be present in spoofed nicknames. For example, with `draft/relaymsg=/` the spoofed nickname MUST include the character `"/"`.
+
+### `RELAYMSG` command
 
 The `RELAYMSG` command takes the following arguments:
 
@@ -22,7 +48,7 @@ Upon receiving this command, the IRCd will translate the message to a `PRIVMSG`:
 @relaymsg=<botnick> :spoofednick!<ident>@<host> PRIVMSG <channel> :<message>
 ```
 
-Clients MUST request the `overdrivenetworks.com/relaymsg` capability before using this command. The capability also lets clients receive the `relaymsg` message tag, which is set to the nick of the sender. This allows the sender to distinguish relayed messages from those sent by other clients, preventing forwarding loops in the case of relay bots.
+Clients MUST request the `draft/relaymsg` capability before using this command. The capability also lets clients receive the `relaymsg` message tag, which is set to the nick of the sender. This allows the sender to distinguish relayed messages from those sent by other clients, preventing forwarding loops in the case of relay bots.
 
 The `ident` and `host` fields are defined by the server implementation and may be configurable.
 
@@ -40,6 +66,8 @@ Servers MUST also sanitize or reject nicks that contain reserved IRC characters,
 Servers may choose to filter spoofed nicks further, or pass them through as is. Spoofed nicks do not necessarily need to be valid IRC nicks; implementations may choose to accept UTF-8 text, for example. One benefit to having spoofed nicks always be invalid is preventing IRC users from changing their nick to one of those that the bot is using.
 
 ## Example implementations
+
+Note: These examples use a prefixed version of this extension (`overdrivenetworks.com/relaymsg`), which is functionally identical.
 
 ### Server side
 
